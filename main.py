@@ -10,10 +10,10 @@ intents.guilds = True
 intents.members = True
 PREFIX = '/'
 app = commands.Bot(command_prefix=PREFIX, intents=intents)
-
-Baekjoon.setup(app)
-CommonCommand.setup(app)
 database = Database.database()
+Baekjoon.setup(app)
+CommonCommand.setup(app,database)
+
 
 @app.event
 async def on_ready():

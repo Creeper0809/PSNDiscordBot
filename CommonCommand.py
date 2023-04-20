@@ -2,10 +2,8 @@ import random
 
 import discord
 
-from main import database
 
-
-def setup(app):
+def setup(app,database):
     @app.command()
     async def 회원가입(ctx):
         if database.add_user(ctx.message.author):
