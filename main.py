@@ -8,7 +8,7 @@ intents = discord.Intents.default()
 intents.message_content = True
 intents.guilds = True
 intents.members = True
-PREFIX = '/'
+PREFIX = '!'
 app = commands.Bot(command_prefix=PREFIX, intents=intents)
 database = Database.database()
 Baekjoon.setup(app)
@@ -21,6 +21,4 @@ async def on_ready():
     await app.change_presence(status=discord.Status.online, activity=None)
 
 if __name__=="__main__":
-    app.run('')
-
-    '''  dfdsf'''
+    app.run('MTA5NDEzMjExMTEwOTI3NTY1OA.G1w1SI.fPClOcUxbP-2Ogoke0458PJ81-sEnFB1qYVAM8')
