@@ -36,4 +36,4 @@ def setup(app):
             await ctx.send(file=file, embed=embed)
         else:
             await ctx.send("프로필 요청 실패")
-
+//
