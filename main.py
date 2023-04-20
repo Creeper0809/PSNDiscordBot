@@ -21,4 +21,4 @@ async def on_ready():
     await app.change_presence(status=discord.Status.online, activity=None)
 
 if __name__=="__main__":
-    app.run('MTA5NDEzMjExMTEwOTI3NTY1OA.G1w1SI.fPClOcUxbP-2Ogoke0458PJ81-sEnFB1qYVAM8')
+    app.run('tocken')
