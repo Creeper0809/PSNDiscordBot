@@ -66,7 +66,7 @@ async def 가위바위보(ctx,message):
         result = "플레이어가 졌다!"
     await ctx.channel.send(result)
 
-
+s
 @app.command()
 async def 하이(ctx):
     print()
