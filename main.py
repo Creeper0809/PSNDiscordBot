@@ -5,25 +5,20 @@ import CommonCommand
 import discord
 from discord.ext import commands
 from dotenv import load_dotenv
+import Datamodel
+import RPGGame
 
 intents = discord.Intents.default()
 intents.message_content = True
 intents.guilds = True
 intents.members = True
-PREFIX = '!'
+PREFIX = '/'
 app = commands.Bot(command_prefix=PREFIX, intents=intents)
-load_dotenv()
 
-mysql = pymysql.connect(
-    host=os.environ.get("HOST"),
-    port=int(os.environ.get("PORT")),
-    user=os.environ.get("USER"),
-    password=os.environ.get("PASSWORD"),
-    database=os.environ.get("DATABASE")
-)
-
+Datamodel.makeDB()
 Baekjoon.setup(app)
-CommonCommand.setup(app,mysql)
+CommonCommand.setup(app)
+RPGGame.setup(app)
 
 @app.event
 async def on_ready():
