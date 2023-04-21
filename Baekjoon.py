@@ -17,6 +17,9 @@ def get_profile(user_id):
         return json.loads(response.text)
     else:
         return None
+'''def get_problem(user_id) :
+'''
+
 def setup(app):
     @app.command(aliases=['백준'])
     async def roll(ctx, user_id: str):
@@ -30,10 +33,15 @@ def setup(app):
 
         if profile is not None:
             embed = discord.Embed(title=f"유저 {user_id}님의 프로필 정보",description=f"티어: {tier[profile['tier']]}\n"
-            f"Ranking: {profile['rank']}\n"f"Rating: {profile['rating']}\n"f"EXP: {profile['exp']}\n"f"EXP: {profile['profileImageUrl']}\n", )
+            f"Ranking: {profile['rank']}\n"f"Rating: {profile['rating']}\n"f"EXP: {profile['exp']}\n"f"PROFILE: {profile['profileImageUrl']}\n", )
             file = discord.File(f"image/baekjoon_tear/{profile['tier']}.png", filename="image.png")
             embed.set_thumbnail(url='attachment://image.png')
             await ctx.send(file=file, embed=embed)
         else:
             await ctx.send("프로필 요청 실패")
-//
+'''
+  @app.command(aliases=['문제정보'])
+    async def roll(ctx, user_id: str) :
+
+
+'''
