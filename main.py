@@ -1,7 +1,5 @@
 import os
-
 import pymysql
-
 import Baekjoon
 import CommonCommand
 import discord
@@ -24,9 +22,8 @@ mysql = pymysql.connect(
     database=os.environ.get("DATABASE")
 )
 
-Baekjoon.setup(app,mysql)
+Baekjoon.setup(app)
 CommonCommand.setup(app,mysql)
-
 
 @app.event
 async def on_ready():
