@@ -39,6 +39,8 @@ def setup(app):
             await roll1(ctx,option,args[0])
         elif option == '문제번호' :
             await roll2(ctx,option,args[0])
+        elif option == 'pvp요청' :
+            await 아이디(ctx,option,args[0])
         else :
             await ctx.send("그런 명령어는 존재하지 않습니다.")
     async def roll1(ctx,option,user_id: str):
@@ -70,3 +72,12 @@ def setup(app):
         else:
             await ctx.send("문제의 대한 정보가 없습니다")
 
+   '''
+   
+    async def 아이디(ctx, option, id: str):
+        
+        
+        if id is not NULL :
+   
+   
+   '''
