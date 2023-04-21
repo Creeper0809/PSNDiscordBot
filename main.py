@@ -18,7 +18,7 @@ load_dotenv()
 
 mysql = pymysql.connect(
     host=os.environ.get("HOST"),
-    port=os.environ.get("PORT"),
+    port=int(os.environ.get("PORT")),
     user=os.environ.get("USER"),
     password=os.environ.get("PASSWORD"),
     database=os.environ.get("DATABASE")
