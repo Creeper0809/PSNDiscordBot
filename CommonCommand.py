@@ -1,32 +1,42 @@
+import datetime
 import random
 
 import discord
 
+import Datamodel
 
-def setup(app,mysql):
+
+def setup(app):
+
     @app.command()
     async def 회원가입(ctx):
-        if database.add_user(ctx.message.author):
+        user = Datamodel.get_user(ctx.message.author.id)
+        if user is None:
+            Datamodel.add_user(ctx.message.author.id,ctx.message.author.name)
             await ctx.channel.send(f"{ctx.message.author.mention}님 회원가입을 추가합니다!")
         else:
             await ctx.channel.send("이미 가입 된 회원입니다")
 
+
     @app.command()
     async def 유저보기(ctx, user: discord.User):
-        info = database.find_user(user.id)
-        if info is None:
+        userinfo:Datamodel.User = Datamodel.get_user(user.id)
+        if userinfo is None:
             await ctx.channel.send(f"{user.mention}은 없는 회원입니다")
-        await ctx.channel.send(f"{user.mention}은 {info.point}원을 가지고 계십니다.")
+            return
+        await ctx.channel.send(f"{user.mention}은 {userinfo.PWN}원을 가지고 계십니다.")
+
 
     @app.command()
     async def 돈추가(ctx, message):
-        info = database.find_user(ctx.message.author.id)
+        info = Datamodel.get_user(ctx.message.author.id)
         if info is None:
             await ctx.channel.send(f"{ctx.message.author.mention}은 회원가입부터 해주십시오")
         if not str.isdigit(message):
             return
         info.point += int(message)
         await ctx.channel.send(f"{ctx.message.author.mention}은 {info.point}원을 가지고 계십니다.")
+
 
     @app.command()
     async def 가위바위보(ctx, message):
@@ -44,10 +54,30 @@ def setup(app,mysql):
             result = "플레이어가 졌다!"
         await ctx.channel.send(result)
 
+
     @app.command()
     async def 하이(ctx):
         print()
+
         await ctx.send('Hello I am Bot!')
+
+
+    @app.command()
+    async def 출석체크(ctx):
+        user : Datamodel.User = Datamodel.get_user(ctx.message.author.id)
+        if user is None:
+            await ctx.send('회원가입부터 해주십시오.')
+            return
+        attendance_check = datetime.datetime.strptime(user.attendance_check.strftime('%Y-%m-%d'), '%Y-%m-%d')
+        current_date = datetime.datetime.now()
+        delta = (current_date - attendance_check).days
+        if delta == 0:
+            temp = attendance_check.strftime('%m월-%d일')
+            await ctx.send(f'다음날에 다시 출석체크를 시도해주세요 \n{temp}에 출석하셨습니다')
+        else:
+            Datamodel.update_user(user.id,user.discord_name,user.PWN + 1000,user.baekjoon_id,current_date)
+            await ctx.send(f'오늘도 출석해주셔서 감사합니다 계좌로 1000원 입급해드렸습니다 ')
+
 
     @app.command()
     async def 도움말(ctx):
