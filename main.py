@@ -12,7 +12,7 @@ intents = discord.Intents.default()
 intents.message_content = True
 intents.guilds = True
 intents.members = True
-PREFIX = '/'
+PREFIX = '!'
 app = commands.Bot(command_prefix=PREFIX, intents=intents)
 load_dotenv()
 
