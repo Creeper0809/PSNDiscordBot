@@ -1,7 +1,5 @@
 import os
-
 import pymysql
-
 import Baekjoon
 import CommonCommand
 import discord
@@ -16,11 +14,11 @@ intents.guilds = True
 intents.members = True
 PREFIX = '/'
 app = commands.Bot(command_prefix=PREFIX, intents=intents)
+
 Datamodel.makeDB()
 Baekjoon.setup(app)
 CommonCommand.setup(app)
 RPGGame.setup(app)
-
 
 @app.event
 async def on_ready():
