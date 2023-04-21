@@ -3,7 +3,7 @@ import random
 import discord
 
 
-def setup(app,database):
+def setup(app,mysql):
     @app.command()
     async def 회원가입(ctx):
         if database.add_user(ctx.message.author):
@@ -48,3 +48,16 @@ def setup(app,database):
     async def 하이(ctx):
         print()
         await ctx.send('Hello I am Bot!')
+
+    @app.command()
+    async def 도움말(ctx):
+        print("sad")
+        embed = discord.Embed(title=도움말, description=도움말)
+        result = "하이 : 봇이 인사해준다\n"\
+                 "가위바위보 {가위,바위,보} : 봇이랑 가위바위보.\n"\
+                 "회원가입 : 회원가입을 해야 유저 활동을 할 수 있다.\n"\
+                 "유저보기 {유저 멘션} : 멘션한 유저의 정보를 볼 수 있다."
+        embed.add_field(name="기본", value=result, inline=False)
+        result = "돈추가 {수} : 돈을 수만큼 추가해준다"
+        embed.add_field(name="디버그", value=result, inline=False)
+        await ctx.send(embed=embed)

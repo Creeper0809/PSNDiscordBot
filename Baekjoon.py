@@ -17,8 +17,11 @@ def get_profile(user_id):
         return json.loads(response.text)
     else:
         return None
-'''def get_problem(user_id) :
-'''
+        
+def setup(app,mysql):
+    @app.command(aliases=['안녕', 'hi', '안녕하세요'])
+    async def ping(ctx):
+        await ctx.channel.send(f'{ctx.author.mention}님 안녕하세요!')
 
 def setup(app):
     @app.command(aliases=['백준'])
