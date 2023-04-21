@@ -34,4 +34,4 @@ async def on_ready():
     await app.change_presence(status=discord.Status.online, activity=None)
 
 if __name__=="__main__":
-    app.run(os.environ.get("TOKEN"))
+  app.run(os.environ.get("TOKEN"))
