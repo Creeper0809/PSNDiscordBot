@@ -1,5 +1,4 @@
 import os
-
 from dotenv import load_dotenv
 from sqlalchemy import create_engine, Integer, Column, String, Date, or_, and_, ForeignKey
 from sqlalchemy.orm import sessionmaker, relationship
@@ -158,7 +157,25 @@ def update_gameInfo(id,health):
     session = Session()
     session.query(UserRPGInfo).filter(UserRPGInfo.discord_id == id).update({'now_hp':health})
 
+class UserRPGInfo(Base):
+    __tablename__ = 'UserRPGInfo'
+    id = Column(Integer,primary_key=True)
+    discord_id = Column(String)
+    name = Column(String,default="무명")
+    level = Column(Integer, default=1)
+    hp = Column(Integer, default=30)
+    now_hp = Column(Integer, default=30)
+    attack = Column(Integer, default=5)
+    defense = Column(Integer, default=0)
+    speed = Column(Integer, default=10)
 
+def update_userByUserClass(user,baekjoonid):
+    Session = sessionmaker(bind=connection_pool)
+    session = Session()
+    session.query(User).filter(User.id == user.id).update({'baekjoon_id': baekjoonid})
+    session.commit()
+    session.close()
+    
 def get_monster(name):
     Session = sessionmaker(bind=connection_pool)
     session = Session()
@@ -167,3 +184,4 @@ def get_monster(name):
     if len(results) == 0:
         return None
     return results[0]
+
