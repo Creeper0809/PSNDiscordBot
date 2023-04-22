@@ -69,6 +69,7 @@ async def get_problem(problem_id,ctx) :
         embed.set_thumbnail(url='attachment://image.png')
         await ctx.send(file=file, embed=embed)
 
+
 def setup(app):
     @app.group(name='백준')
     async def beakjoon(ctx) :
@@ -97,6 +98,7 @@ def setup(app):
                 await ctx.send("프로필 정보를 찾을 수 없습니다.")
 
     @beakjoon.command(name='문제번호')
+
     async def 문제번호(ctx,problem_number: str):
         await get_problem(problem_number,ctx)
 
@@ -115,3 +117,4 @@ def setup(app):
             await ctx.send("아이디가 등록되었습니다.")
         else :
             await ctx.send("백준에 없는 아이디입니다.")
+
