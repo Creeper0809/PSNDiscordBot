@@ -1,5 +1,4 @@
 import os
-
 from dotenv import load_dotenv
 from sqlalchemy import create_engine, Integer, Column, String, Date
 from sqlalchemy.orm import sessionmaker
@@ -94,3 +93,10 @@ class UserRPGInfo(Base):
     attack = Column(Integer, default=5)
     defense = Column(Integer, default=0)
     speed = Column(Integer, default=10)
+
+def update_userByUserClass(user,baekjoonid):
+    Session = sessionmaker(bind=connection_pool)
+    session = Session()
+    session.query(User).filter(User.id == user.id).update({'baekjoon_id': baekjoonid})
+    session.commit()
+    session.close()
