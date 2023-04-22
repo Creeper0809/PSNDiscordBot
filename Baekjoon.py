@@ -29,7 +29,13 @@ def get_problem(problem_id) :
     }
     response = requests.get(url, params=params, headers=headers)
     if response.status_code == requests.codes.ok:
-        return json.loads(response.text)
+        problem = json.loads(response.text)
+        embed = discord.Embed(title=problem['titleKo'], url=f"https://www.acmicpc.net/problem/{problem['problemId']}",
+                              description=f"문제번호:{problem['problemId']}\n"f"채점가능여부: {problem['isSolvable']}\n"
+                                          f""f"맞은 사람 수: {problem['acceptedUserCount']}\n"f"평균 시도 횟수: {problem['averageTries']}\n")
+        file = discord.File(f"image/baekjoon_tear/{problem['level']}.png", filename="image.png")
+        embed.set_thumbnail(url='attachment://image.png')
+        return (embed,file)
     else:
         return None
 
@@ -65,11 +71,7 @@ def setup(app):
     async def roll2(ctx,problem_number: str):
         problem = get_problem(problem_number)
         if problem is not None:
-            embed = discord.Embed(title=problem['titleKo'],url=f"https://www.acmicpc.net/problem/{problem['problemId']}",
-            description=f"문제번호:{problem['problemId']}\n"f"채점가능여부: {problem['isSolvable']}\n"f"맞은 사람 수: {problem['acceptedUserCount']}\n"
-            f"평균 시도 횟수: {problem['averageTries']}\n")
-            file = discord.File(f"image/baekjoon_tear/{problem['level']}.png", filename="image.png")
-            embed.set_thumbnail(url='attachment://image.png')
+            embed,file = problem
             await ctx.send(file=file, embed=embed)
         else:
             await ctx.send("문제의 대한 정보가 없습니다")
@@ -86,9 +88,6 @@ def setup(app):
             await ctx.send(file=file, embed=embed)
         else:
             await ctx.send("문제의 대한 정보가 없습니다")
-
-    @beakjoon.command(name='아이디등록')
-    async def 아이디등록(ctx,beakjoon_id:str) :
 
 
 
