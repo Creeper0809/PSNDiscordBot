@@ -4,7 +4,9 @@ import json
 import requests
 import random
 from sqlalchemy.future import engine
+
 import Datamodel
+import RPGDatamodel
 from sqlalchemy.orm import sessionmaker
 
 async def get_profile(user_id,ctx,a):
@@ -75,12 +77,16 @@ def setup(app):
     async def beakjoon(ctx) :
         if ctx.invoked_subcommand is None :
             await ctx.send("잘못된 명령어입니다.")
+
+
     @beakjoon.command(name = '도움말')
     async def 도움말(ctx) :
         embed = discord.Embed(title="도움말", description="/백준 유저정보 {백준 닉네임} : 백준의 닉네임을 가져옵니다.\n"
         "/백준 문제번호 {문제번호} : 백준의 문제번호를 입력하면, 문제에 대한 정보가 나옵니다.\n"
         "/백준 랜덤 : 백준의 문제에 대한 정보가 랜덤으로 나옵니다.\n")
         await ctx.send(embed=embed)
+
+
     @beakjoon.command(name = '유저정보')
     async def 유저정보(ctx,user:str) :
         if user.startswith('<@') :
@@ -105,6 +111,7 @@ def setup(app):
     @beakjoon.command(name='랜덤')
     async def 랜덤(ctx):
         await get_problem(random.randrange(1000,27892),ctx)
+
     @beakjoon.command(name='아이디등록')
     async def 아이디등록(ctx, baekjoonId:str) :
         user : Datamodel.User = Datamodel.get_user(ctx.message.author.id)

@@ -4,15 +4,16 @@ import random
 import discord
 
 import Datamodel
+import RPGDatamodel
 
 
 def setup(app):
 
     @app.command()
     async def 회원가입(ctx):
-        user = Datamodel.get_user(ctx.message.author.id)
+        user = RPGDatamodel.get_user(ctx.message.author.id)
         if user is None:
-            Datamodel.add_user(ctx.message.author.id,ctx.message.author.name)
+            RPGDatamodel.add_user(ctx.message.author.id,ctx.message.author.name)
             await ctx.channel.send(f"{ctx.message.author.mention}님 회원가입을 추가합니다!")
         else:
             await ctx.channel.send("이미 가입 된 회원입니다")
@@ -77,7 +78,7 @@ def setup(app):
         else:
             user.PWN += 1000
             user.attendance_check = current_date
-            Datamodel.update_datamodel(user)
+            RPGDatamodel.update_datamodel(user)
             await ctx.send(f'오늘도 출석해주셔서 감사합니다 계좌로 1000원 입급해드렸습니다 ')
 
 
