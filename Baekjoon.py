@@ -150,3 +150,5 @@ def setup(app):
     @beakjoon.command(name='푼문제')
     async def 푼문제(ctx, user_id:str):
         await get_solved(user_id,ctx)
+
+        //
