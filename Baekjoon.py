@@ -43,35 +43,7 @@ async def get_profile(user_id,ctx,a):
             await ctx.send(file=file, embed=embed)
         if a == 2 :
             return True
-async def get_solved(user_id,ctx):   ## user_id가 푼 문제 목록들을 가장 레벨이 높은 순으로 보여줌
-    url = f"https://solved.ac/api/v3/search/problem?query=solved_by%3A{user_id}&sort=level&direction=desc"
-    response = requests.get(url)
-    if response.status_code == requests.codes.ok:
-        tier = {
-            1: 'Bronze V', 2: 'Bronze IV', 3: 'Bronze III', 4: 'Bronze II', 5: 'Bronze I', 6: 'Silver V',
-            7: 'Silver IV', 8: 'Silver III',
-            9: 'Silver II', 10: 'Silver I', 11: 'Gold V', 12: 'Gold IV', 13: 'Gold III', 14: 'Gold II',
-            15: 'Gold I', 16: 'Platinum V',
-            17: 'Platinum IV', 18: 'Platinum III', 19: 'Platinum II', 20: 'Platinum I', 21: 'Diamond V',
-            22: 'Diamond IV', 23: 'Diamond III',
-            24: 'Diamond II', 25: 'Diamond I', 26: 'Ruby V', 27: 'Ruby IV', 28: 'Ruby III', 29: 'Ruby II',
-            30: 'Ruby I', 31: 'Master'
-        }
-        solved = json.loads(response.content.decode('utf-8'))
-        count = solved.get('count')
-        items = solved.get('items')
-        title = ''
-        tier2 = ''
-        title_url = ''
-        embed = discord.Embed(title=f"유저 {user_id}님의 푼 문제")
-        for i in items[:10] :
-            tier2 += f"{tier[i['level']]}\n"
-            title += f"[{i['titleKo']}](https://www.acmicpc.net/problem/{i['problemId']})\n"
-        file = discord.File(f"image/baekjoon_tear/{i['level']}.png", filename="image.png")
-        embed.add_field(name="제목", value=title.rstrip())
-        embed.add_field(name="티어",value=tier2.rstrip())
-        embed.set_thumbnail(url='attachment://image.png')
-        await ctx.send(file=file, embed=embed)
+
 
 async def get_problem(problem_id,ctx) :
     url = "https://solved.ac/api/v3/problem/show"
@@ -92,6 +64,7 @@ async def get_problem(problem_id,ctx) :
         file = discord.File(f"image/baekjoon_tear/{problem['level']}.png", filename="image.png")
         embed.set_thumbnail(url='attachment://image.png')
         await ctx.send(file=file, embed=embed)
+
 
 def setup(app):
     @app.group(name='백준')
@@ -120,11 +93,12 @@ def setup(app):
                 await get_profile(Datamodel.get_user(user).baekjoon_id,ctx,1)
                 ## 이미 아이디 등록할 때부터, 검증이 되기 때문에 result로 검증할 필요가 없다
         else :
-            result = await get_profile(user,ctx,1)
+            result = await get_profile(user,ctx,a)
             if not result :
                 await ctx.send("프로필 정보를 찾을 수 없습니다.")
 
     @beakjoon.command(name='문제번호')
+
     async def 문제번호(ctx,problem_number: str):
         await get_problem(problem_number,ctx)
 
@@ -135,9 +109,6 @@ def setup(app):
     @beakjoon.command(name='아이디등록')
     async def 아이디등록(ctx, baekjoonId:str) :
         user : Datamodel.User = Datamodel.get_user(ctx.message.author.id)
-        if user.baekjoon_id != "" :
-            await ctx.send("이미 아이디가 등록되엇습니다.")
-            return
         if user is None :
             await ctx.send("회원가입을 먼저 해주세요")
             return
@@ -148,6 +119,3 @@ def setup(app):
         else :
             await ctx.send("백준에 없는 아이디입니다.")
 
-    @beakjoon.command(name='푼문제')
-    async def 푼문제(ctx, user_id:str):
-        await get_solved(user_id,ctx)
