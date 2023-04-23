@@ -7,7 +7,13 @@ from sqlalchemy.ext.declarative import declarative_base
 import Datamodel
 
 Base = declarative_base()
-
+rarityColor = {
+    "노말" : "\n",
+    "언커먼" : "yaml\n",
+    "에픽" : "md\n",
+    "레전드리" : "fix\n",
+    "신화" : "diff\n"
+}
 class Monster(Base):
     __tablename__ = 'Monster'
     id = Column(Integer,primary_key=True)
@@ -129,7 +135,7 @@ class UserRPGInfo(Base):
         for item_id in equip_items:
             item = getItem(item_id.item_code)
             items += item.name+'\n'
-            value += f"{item_id.equip_pos}"
+            value += f"{item_id.equip_pos}\n"
         embed.add_field(name="아이템",value=items.rstrip())
         embed.add_field(name="장착 위치", value=value.rstrip())
         return embed
@@ -148,7 +154,7 @@ class Consumable_item(Base):
     id = Column(Integer,primary_key=True)
     name = Column(String)
     ability = Column(String)
-
+    dungeon_pos= Column(String)
 
     def use(self,user : UserRPGInfo):
         print(f"{self.name} 소모품 사용 됨")
@@ -165,6 +171,8 @@ class Equipment_item(Base):
     ap_attack = Column(Integer)
     defense = Column(Integer)
     equip_position = Column(String)
+    rarity = Column(String)
+    dungeon_pos = Column(String)
 
     def use(self,user:UserRPGInfo):
         Session = sessionmaker(bind=Datamodel.connection_pool)
@@ -174,13 +182,14 @@ class Equipment_item(Base):
 
         if equiped_item is not None:
             item = getItem(equiped_item.item_code)
-            add_item_to_inventory(user.id,equiped_item.item_code,1)
             user.attack -= item.attack
             user.hp -= item.hp
             user.now_hp -= item.hp
             user.defense -= item.defense
             text = f"{item.name} -> {self.name} 교환 완료"
             session.delete(equiped_item)
+            add_item_to_inventory(user.id,item.id,1)
+            session.commit()
 
         user.attack += self.attack
         user.hp += self.hp
@@ -197,7 +206,10 @@ class Equipment_item(Base):
     def getDiscription(self):
         embed = discord.Embed(title=f"{self.name}의 정보",
                               description=self.description)
-        embed.add_field(name="능력",value=self.ability)
+        rare = "```"+rarityColor[self.rarity]+self.rarity+"\n```"
+        embed.add_field(name="등급",value=rare)
+        embed.add_field(name="장착위치",value=self.equip_position)
+        embed.add_field(name="능력",value=self.ability,inline=False)
         spac = ""
         if self.hp > 0:
             spac += ":heart: 체력: +%20s\n" % f"{self.hp}"
@@ -255,7 +267,14 @@ def get_monster(name):
     return result
 
 
+def get_items_bydungeon(name):
+    Session = sessionmaker(bind=Datamodel.connection_pool)
+    session = Session()
+    itemList = list()
+    itemList += session.query(Consumable_item).filter(Consumable_item.dungeon_pos == name).all()
+    itemList += session.query(Equipment_item).filter(Equipment_item.dungeon_pos == name).all()
 
+    return itemList
 
 
 def get_experimentTable(user_experiment : UserRPGInfo):
@@ -298,11 +317,14 @@ def add_item_to_inventory(user_id, item_code, quantity,equip_pos = "",isequiped 
         return False
     inventory_item = session.query(UserInv).filter_by(discord_id=user_id, item_code=item_code,
                                                       is_equiped=isequiped).first()
+
     if inventory_item is None:
         inventory_item = UserInv(item_code=item_code, quantity=quantity, discord_id=user_id, equip_pos=equip_pos,
                                  is_equiped=isequiped)
+        print(inventory_item.item_code, inventory_item.is_equiped,"1")
         session.add(inventory_item)
     else:
+        print(inventory_item.item_code, inventory_item.is_equiped,"2")
         inventory_item.quantity += quantity
         if inventory_item.quantity <= 0:
             session.delete(inventory_item)

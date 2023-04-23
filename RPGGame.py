@@ -3,6 +3,8 @@ import random
 from collections import deque
 
 import discord
+
+import Datamodel
 import RPGDatamodel
 import Skills
 
@@ -104,7 +106,7 @@ def setup(app):
 
         await embedMessage.edit(embed=embed)
         await embedMessage.add_reaction("⛔")
-        events = [fightEvent,Chest]
+        events = [Chest]
         queue = deque(maxlen=5)
         while userinfo.now_hp != 0 and not combat_user[userinfo.id]["나가기"]:
             random_sleep = random.randint(0,10)
@@ -240,7 +242,7 @@ def setup(app):
             combat_text = f"{user.name}은 {randomMonster.name}에 의해 쓰러졌다.\n"
         else:
             combat_text = f"{user.name}은 {randomMonster.name}에게서 승리를 가져왔다! 레벨 업! {randomMonster.dropPWN}원 획득.\n"
-            temp = RPGDatamodel.get_user(user.id)
+            temp = Datamodel.get_user(user.id)
             for i in randomMonster.droptable:
                 random_num = random.uniform(0,100)
                 if random_num <= i.probability:
@@ -254,8 +256,59 @@ def setup(app):
         RPGDatamodel.update_datamodel(user)
         return combat_text
 
-    async def Chest(ctx, user, *args):
-        return "상자를 발견했다!"
+    async def Chest(ctx, user, dungeon):
+        chests = [("나무상자",0,"나무상자다. 노말~에픽등급 아이템(30%)과 소모품(70%)이 나온다.")
+                    ,("철상자",1,"철상자다. 언커먼~레전드리등급 아이템(30%)과 소모품(70%)이 나온다.")
+                    , ("금상자",2,"금상자다. 언커먼~레전드리등급 아이템(30%)과 소모품(70%)이 나온다.")
+                    ,("다이아상자",3,"다이아 상자다. 레전드리~신화등급 아이템이 나온다.")
+                    ,("저주받은상자",4,"저주받은 상자다. 극악의 확률로 레전드리~신화등급의 아이템이 나오지만 탐욕의 저주를 받아"
+                                 " 앞으로의 전투에서 랜덤 디버프를 받는다.")]
+
+        weight = [0.55,0.25,0.1,0.005,0.095]
+        chest = random.choices(chests, weight)[0]
+        text = f"{chest[0]}를 발견했다!\n"
+        itemList = RPGDatamodel.get_items_bydungeon(dungeon.name)
+        if random.choices(["소모품","아이템"],[0.7,0.3])[0] == "소모품":
+            consume = None
+            for i in itemList:
+                if isinstance(i,RPGDatamodel.Consumable_item):
+                    consume = i
+                    break
+            RPGDatamodel.add_item_to_inventory(user.id,consume.id,1)
+            text += f"{consume.name}을 얻었다!"
+            return text
+        rarity = ["노말", "언커먼", "에픽", "레전드리", "신화"]
+        print(chest)
+        if chest[1] == 4:
+            if random.choices(["성공","실패"],[0.0001,0.9999])[0] == "실패":
+                # 저주 걸기
+                text += "저주받은 상자에 의해 탐욕의 저주를 받았다"
+                return text
+
+
+        if chest[1] == 0:
+            weight = [0.8,0.15,0.05,0,0]
+        elif chest[1] == 1:
+            weight = [0,0.8,0.15,0.05,0]
+        elif chest[1] == 2:
+            weight = [0, 0.5, 0.3, 0.2, 0]
+        elif chest[1] == 3:
+            weight = [0, 0, 0, 0.5, 0.5]
+        elif chest[1] == 4:
+            weight = [0, 0, 0, 0.2, 0.8]
+
+        rare = random.choices(rarity,weight)[0]
+        print(rare)
+        consume = None
+        for i in itemList:
+            if isinstance(i, RPGDatamodel.Equipment_item) :
+                print(i.rarity)
+            if isinstance(i, RPGDatamodel.Equipment_item) and i.rarity == rare:
+                consume = i
+                break
+        RPGDatamodel.add_item_to_inventory(user.id,consume.id,1)
+        text += f"{consume.name}({consume.rarity})를 얻었다!"
+        return
 
 
 
