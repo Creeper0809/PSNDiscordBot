@@ -125,9 +125,11 @@ def setup(app):
     async def 문제번호(ctx,problem_number: str):
         await get_problem(problem_number,ctx)
 
-    @beakjoon.command(name='랜덤')
-    async def 랜덤(ctx):
-        await get_problem(random.randrange(1000,27892),ctx)
+    @beakjoon.command()
+    async def 랜덤(ctx,*,args) :
+        if args.startswith('실버') :
+
+
 
     @beakjoon.command(name='아이디등록')
     async def 아이디등록(ctx, baekjoonId:str) :
