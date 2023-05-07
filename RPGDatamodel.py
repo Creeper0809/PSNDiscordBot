@@ -5,7 +5,7 @@ from sqlalchemy.orm import sessionmaker, relationship
 from sqlalchemy.ext.declarative import declarative_base
 
 import Datamodel
-
+load_dotenv()
 Base = declarative_base()
 rarityColor = {
     "노말" : "\n",
@@ -358,4 +358,3 @@ def getItem(item_id):
     else:
         item = consumable_item
     return item
-

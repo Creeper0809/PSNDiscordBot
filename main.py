@@ -5,7 +5,6 @@ import CommonCommand
 import discord
 from discord.ext import commands
 from dotenv import load_dotenv
-
 import Datamodel
 import RPGGame
 
@@ -20,7 +19,7 @@ Datamodel.makeDB()
 Baekjoon.setup(app)
 CommonCommand.setup(app)
 RPGGame.setup(app)
-
+load_dotenv()
 @app.event
 async def on_ready():
     print('Done')
