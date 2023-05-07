@@ -2,12 +2,10 @@ import discord
 from discord.ext import commands
 import json
 import requests
-import Datamodel
-from sqlalchemy.future import engine
 import RPGDatamodel
 from sqlalchemy.orm import sessionmaker
 import random
-
+import Datamodel
 
 def setup(app):
     async def get_profile(user_id, ctx, a):
@@ -44,7 +42,6 @@ def setup(app):
                 await ctx.send(file=file, embed=embed)
             if a == 2:
                 return True
-
     async def get_problem(problem_id, ctx):
         url = "https://solved.ac/api/v3/problem/show"
         params = {
@@ -86,7 +83,7 @@ def setup(app):
             tier2 = ''
             title_url = ''
             embed = discord.Embed(title=f"유저 {user_id}님의 푼 문제")
-            for i in items[:10]:
+            for i in items[:10] :
                 emoji_id = discord.utils.get(app.emojis, id=int(tier_emoge[i['level']]))
                 tier2 += f"{emoji_id}\n"
                 if len(i['titleKo']) > 7 :
@@ -96,8 +93,8 @@ def setup(app):
             embed.add_field(name="제목", value=title.rstrip())
             embed.add_field(name="티어", value=tier2.rstrip())
             await ctx.send(embed=embed)
-    async def get_random(ctx, tier, random) : ## 백준 랜덤에 티어를 붙이면 티어에 따라 한국어 문제를 랜덤으로 뽑아 사용자에게 전달한다.
-        url = f"https://solved.ac/api/v3/search/problem?query=tier:{tier}&%ko"
+    async def get_random(ctx, tier, random,page) : ## 백준 랜덤에 티어를 붙이면 티어에 따라 한국어 문제를 랜덤으로 뽑아 사용자에게 전달한다.
+        url = f"https://solved.ac/api/v3/search/problem?query=%25ko%26*{tier}+&page={page}"
         response = requests.get(url)
         if not response.status_code == requests.codes.ok:
             return await ctx.send("예상치 못한 오류가 발생했습니다")
@@ -122,6 +119,8 @@ def setup(app):
         "/백준 문제번호 {문제번호} : 백준의 문제번호를 입력하면, 문제에 대한 정보가 나옵니다.\n"
         "/백준 랜덤 : 백준의 문제에 대한 정보가 랜덤으로 나옵니다.\n")
         await ctx.send(embed=embed)
+
+
     @beakjoon.command(name = '유저정보')
     async def 유저정보(ctx,user:str) :
         if user.startswith('<@') :
@@ -163,16 +162,24 @@ def setup(app):
     async def 랜덤(ctx, *, args) :
         first_word = args.split()[0]
         if first_word.startswith('브론즈') :
-            await get_random(ctx, 'b',random)
+            page = random.randrange(1,21)
+            await get_random(ctx,'b',random,page)
         elif first_word.startswith('실버') :
-            await get_random(ctx, 's',random)
+            page = random.randrange(1,32)
+            await get_random(ctx,'s',random,page)
         elif first_word.startswith('골드') :
-            await get_random(ctx, 'g',random)
+            page = random.randrange(1, 51)
+            await get_random(ctx,'g',random,page)
         elif first_word.startswith('플레') :
-            await get_random(ctx, 'p',random)
+            page = random.randrange(1,42)
+            await get_random(ctx,'p',random,page)
         elif first_word.startswith('다이아') :
-            await get_random(ctx, 'd',random)
+            page = random.randrange(1,19)
+            await get_random(ctx,'d',random,page)
         elif first_word.startswith('루비') :
-            await get_random(ctx, 'r',random)
+            page = random.randrange(1,4)
+            await get_random(ctx,'r',random,page)
         else :
             await ctx.send("잘못된 명령어입니다")
+
+
