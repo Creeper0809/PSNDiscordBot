@@ -2,11 +2,12 @@ import discord
 from discord.ext import commands
 import json
 import requests
-import random
 import Datamodel
 from sqlalchemy.future import engine
 import RPGDatamodel
 from sqlalchemy.orm import sessionmaker
+import random
+
 
 def setup(app):
     async def get_profile(user_id, ctx, a):
@@ -95,10 +96,26 @@ def setup(app):
             embed.add_field(name="제목", value=title.rstrip())
             embed.add_field(name="티어", value=tier2.rstrip())
             await ctx.send(embed=embed)
+    async def get_random(ctx, tier, random) : ## 백준 랜덤에 티어를 붙이면 티어에 따라 한국어 문제를 랜덤으로 뽑아 사용자에게 전달한다.
+        url = f"https://solved.ac/api/v3/search/problem?query=tier:{tier}&%ko"
+        response = requests.get(url)
+        if not response.status_code == requests.codes.ok:
+            return await ctx.send("예상치 못한 오류가 발생했습니다")
+        if response.status_code == requests.codes.ok :
+            solved = json.loads(response.content.decode('utf-8'))
+            items = solved.get('items')
+            rand = random.choice(items)
+            embed = discord.Embed(title=f"{rand['titleKo']}",
+            url=f"https://www.acmicpc.net/problem/{rand['problemId']}",description=f"문제번호:{rand['problemId']}\n"
+            f"채점가능여부:{rand['isPartial']}\n"f"맞은 사람 수:{rand['acceptedUserCount']}\n"f"평균 시도 횟수:{rand['averageTries']}\n")
+            file = discord.File(f"image/baekjoon_tear/{rand['level']}.png", filename="image.png")
+            embed.set_thumbnail(url='attachment://image.png')
+            await ctx.send(file=file,embed=embed)
     @app.group(name='백준')
     async def beakjoon(ctx) :
         if ctx.invoked_subcommand is None :
             await ctx.send("잘못된 명령어입니다.")
+
     @beakjoon.command(name = '도움말')
     async def 도움말(ctx) :
         embed = discord.Embed(title="도움말", description="/백준 유저정보 {백준 닉네임} : 백준의 닉네임을 가져옵니다.\n"
@@ -122,15 +139,8 @@ def setup(app):
                 await ctx.send("프로필 정보를 찾을 수 없습니다.")
 
     @beakjoon.command(name='문제번호')
-    async def 문제번호(ctx,problem_number: str):
+    async def 문제번호(ctx,problem_number: str) :
         await get_problem(problem_number,ctx)
-
-    @beakjoon.command()
-    async def 랜덤(ctx,*,args) :
-        if args.startswith('실버') :
-
-
-
     @beakjoon.command(name='아이디등록')
     async def 아이디등록(ctx, baekjoonId:str) :
         user : Datamodel.User = Datamodel.get_user(ctx.message.author.id)
@@ -147,5 +157,22 @@ def setup(app):
         else :
             await ctx.send("백준에 없는 아이디입니다.")
     @beakjoon.command(name='푼문제')
-    async def 푼문제(ctx, user_id:str):
+    async def 푼문제(ctx, user_id:str) :
         await get_solved(user_id,ctx)
+    @beakjoon.command(name='랜덤')
+    async def 랜덤(ctx, *, args) :
+        first_word = args.split()[0]
+        if first_word.startswith('브론즈') :
+            await get_random(ctx, 'b',random)
+        elif first_word.startswith('실버') :
+            await get_random(ctx, 's',random)
+        elif first_word.startswith('골드') :
+            await get_random(ctx, 'g',random)
+        elif first_word.startswith('플레') :
+            await get_random(ctx, 'p',random)
+        elif first_word.startswith('다이아') :
+            await get_random(ctx, 'd',random)
+        elif first_word.startswith('루비') :
+            await get_random(ctx, 'r',random)
+        else :
+            await ctx.send("잘못된 명령어입니다")
